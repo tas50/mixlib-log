@@ -25,12 +25,16 @@ Log.error('baz')
 Log.fatal('wewt')
 ```
 
-By default, `Mixlib::Logger` logs to STDOUT. To alter this, you should call `Log.init`, passing any arguments to the standard Ruby Logger. For example:
+By default, `Mixlib::Log` logs to STDOUT at the `:warn` level. To log somewhere else, call `Log.init` with a file path, an IO object, or an existing logger object. For example:
 
 ```ruby
-Log.init('/tmp/logfile')  # log to /tmp/logfile
-Log.init('/tmp/logfile', 7)  # log to /tmp/logfile, rotate every day
+Log.init('/tmp/logfile')          # log to /tmp/logfile
+Log.init($stderr)                 # log to an IO
+Log.init(Logger.new('/tmp/log'))  # use a logger you've already configured
+Log.level = :info
 ```
+
+Log files are never rotated. If you need rotation, pass in a `::Logger` configured for it, or use an external tool such as logrotate.
 
 Enjoy!
 

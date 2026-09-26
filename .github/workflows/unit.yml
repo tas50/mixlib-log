@@ -21,7 +21,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        ruby: ["3.2", "3.3", "3.4", "4.0"]
+        ruby: ["3.3", "3.4", "4.0"]
     runs-on: ${{ matrix.os }}
     env:
       BUNDLE_WITHOUT: debug
@@ -31,4 +31,4 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
-      - run: bundle exec rake spec features
+      - run: bundle exec rake spec

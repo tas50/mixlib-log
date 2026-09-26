@@ -8,3 +8,4 @@ pkg
 Gemfile.lock
 vendor
 spec/examples.txt
+coverage/

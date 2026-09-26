@@ -17,8 +17,17 @@
 # limitations under the License.
 #
 
+require "simplecov"
+SimpleCov.start do
+  enable_coverage :branch
+  skip "/spec/"
+end
+
+require "stringio"
+require "tmpdir"
 require "mixlib/log"
-require "mixlib/log/formatter"
+
+Dir[File.join(__dir__, "support", "**", "*.rb")].each { |f| require f }
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
@@ -39,8 +48,7 @@ RSpec.configure do |config|
 
   config.order = :random
   Kernel.srand config.seed
-end
 
-class Logit
-  extend Mixlib::Log
+  # Formatter.show_time is process-wide, so put it back after every example
+  config.after { Mixlib::Log::Formatter.show_time = true }
 end

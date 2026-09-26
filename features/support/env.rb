@@ -16,11 +16,10 @@
 # limitations under the License.
 #
 
-$: << File.join(File.dirname(__FILE__), "..", "..", "lib")
-
 require "rspec/expectations"
 require "mixlib/log"
 require "tmpdir"
+require "fileutils"
 require "stringio"
 
 class MyWorld
@@ -37,9 +36,9 @@ World do
 end
 
 Before do
-  system("mkdir -p #{@tmpdir}")
+  FileUtils.mkdir_p(@tmpdir)
 end
 
 After do
-  system("rm -rf #{@tmpdir}")
+  FileUtils.rm_rf(@tmpdir)
 end

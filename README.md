@@ -1,7 +1,8 @@
 # Mixlib::Log
 
 [![Gem Version](https://badge.fury.io/rb/mixlib-log.svg)](https://badge.fury.io/rb/mixlib-log)
-[![Build status](https://badge.buildkite.com/cb1e5b6f3cc77071f4b2315f6b605fe60d86e2862a490873d4.svg?branch=master)](https://buildkite.com/chef-oss/chef-mixlib-log-master-verify)
+[![Unit Tests](https://github.com/chef/mixlib-log/actions/workflows/unit.yml/badge.svg?branch=main)](https://github.com/chef/mixlib-log/actions/workflows/unit.yml)
+[![Lint](https://github.com/chef/mixlib-log/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/chef/mixlib-log/actions/workflows/lint.yml)
 
 Mixlib::Log provides a mixin for enabling a class based logger object, a-la
 Merb, Chef, and Nanite. To use it:
@@ -43,7 +44,7 @@ rake docs
 
 ## Contributing
 
-For information on contributing to this project please see our [Contributing Documentation](https://github.com/chef/chef/blob/master/CONTRIBUTING.md)
+For information on contributing to this project please see our [Contributing Documentation](https://github.com/chef/chef/blob/main/CONTRIBUTING.md)
 
 ## License 
 

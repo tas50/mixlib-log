@@ -4,12 +4,12 @@ begin
   require "cucumber/rake/task"
 
   Cucumber::Rake::Task.new(:features) do |t|
-    t.cucumber_opts = "--format pretty"
+    t.cucumber_opts = %w{--format pretty --publish-quiet}
     t.bundler = false
   end
 rescue LoadError
   desc "cucumber is not installed, this task is disabled"
-  task :spec do
+  task :features do
     abort "cucumber is not installed. bundle install first to make sure all dependencies are installed."
   end
 end

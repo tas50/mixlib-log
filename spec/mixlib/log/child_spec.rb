@@ -17,7 +17,6 @@
 
 require "tempfile" unless defined?(Tempfile)
 require "stringio" unless defined?(StringIO)
-require "spec_helper"
 
 RSpec.describe Mixlib::Log::Child do
   before do

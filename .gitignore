@@ -7,3 +7,4 @@ pkg
 .bundle
 Gemfile.lock
 vendor
+spec/examples.txt

@@ -14,8 +14,6 @@
 # limitations under the License.
 #
 
-require "spec_helper"
-
 RSpec.describe Mixlib::Log::Logger do
   let(:io) { StringIO.new }
 

@@ -17,48 +17,48 @@
 #
 
 require "time" unless defined?(Time.zone_offset)
-require "spec_helper"
 
 RSpec.describe Mixlib::Log::Formatter do
-  before(:each) do
-    @formatter = Mixlib::Log::Formatter.new
+  subject(:formatter) { described_class.new }
+
+  # show_time is class-level state, so restore the default after each example
+  after { described_class.show_time = true }
+
+  it "prints raw strings with msg2str(string)" do
+    expect(formatter.msg2str("nuthin new")).to eq("nuthin new")
   end
 
-  it "should print raw strings with msg2str(string)" do
-    expect(@formatter.msg2str("nuthin new")).to eq("nuthin new")
-  end
-
-  it "should format exceptions properly with msg2str(e)" do
+  it "formats exceptions properly with msg2str(e)" do
     e = IOError.new("legendary roots crew")
-    expect(@formatter.msg2str(e)).to eq("legendary roots crew (IOError)\n")
+    expect(formatter.msg2str(e)).to eq("legendary roots crew (IOError)\n")
   end
 
-  it "should format random objects via inspect with msg2str(Object)" do
-    expect(@formatter.msg2str([ "black thought", "?uestlove" ])).to eq('["black thought", "?uestlove"]')
+  it "formats random objects via inspect with msg2str(Object)" do
+    expect(formatter.msg2str([ "black thought", "?uestlove" ])).to eq('["black thought", "?uestlove"]')
   end
 
-  it "should return a formatted string with call" do
+  it "returns a formatted string with call" do
     time = Time.new
-    Mixlib::Log::Formatter.show_time = true
-    expect(@formatter.call("monkey", time, "test", "mos def")).to eq("[#{time.iso8601}] monkey: mos def\n")
+    described_class.show_time = true
+    expect(formatter.call("monkey", time, "test", "mos def")).to eq("[#{time.iso8601}] monkey: mos def\n")
   end
 
-  it "should allow you to turn the time on and off in the output" do
-    Mixlib::Log::Formatter.show_time = false
-    expect(@formatter.call("monkey", Time.new, "test", "mos def")).to eq("monkey: mos def\n")
+  it "allows you to turn the time on and off in the output" do
+    described_class.show_time = false
+    expect(formatter.call("monkey", Time.new, "test", "mos def")).to eq("monkey: mos def\n")
   end
 
   context "with structured data" do
     let(:data) { {} }
 
-    it "should format a message" do
+    it "formats a message" do
       data[:msg] = "nuthin new"
-      expect(@formatter.msg2str(data)).to eq("nuthin new")
+      expect(formatter.msg2str(data)).to eq("nuthin new")
     end
 
-    it "should format an exception" do
+    it "formats an exception" do
       data[:err] = IOError.new("legendary roots crew")
-      expect(@formatter.msg2str(data)).to eq("legendary roots crew (IOError)\n")
+      expect(formatter.msg2str(data)).to eq("legendary roots crew (IOError)\n")
     end
   end
 end

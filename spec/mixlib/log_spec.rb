@@ -19,7 +19,6 @@
 
 require "tempfile" unless defined?(Tempfile)
 require "stringio" unless defined?(StringIO)
-require "spec_helper"
 
 class LoggerLike
   attr_accessor :level
@@ -51,7 +50,7 @@ RSpec.describe Mixlib::Log do
 
   # Since we are testing class behaviour for an instance variable
   # that gets set once, we need to reset it prior to each example [cb]
-  before(:each) do
+  before do
     Logit.reset!
   end
 
@@ -79,14 +78,14 @@ RSpec.describe Mixlib::Log do
     expect(logger.messages).to match(/qux/)
   end
 
-  it "should re-initialize the logger if init is called again" do
+  it "re-initializes the logger if init is called again" do
     first_logdev, second_logdev = StringIO.new, StringIO.new
     Logit.init(first_logdev)
     Logit.fatal "FIRST"
     expect(first_logdev.string).to match(/FIRST/)
     Logit.init(second_logdev)
     Logit.fatal "SECOND"
-    expect(first_logdev.string).to_not match(/SECOND/)
+    expect(first_logdev.string).not_to match(/SECOND/)
     expect(second_logdev.string).to match(/SECOND/)
   end
 
@@ -95,7 +94,7 @@ RSpec.describe Mixlib::Log do
     expect(Logit.configured?).to be true
   end
 
-  it "should set the log level using the binding form,  with :trace, :debug, :info, :warn, :error, or :fatal" do
+  it "sets the log level using the binding form, with :trace, :debug, :info, :warn, :error, or :fatal" do
     levels = {
       trace: Mixlib::Log::TRACE,
       debug: Mixlib::Log::DEBUG,
@@ -118,7 +117,7 @@ RSpec.describe Mixlib::Log do
     expect(logdev.string).to match(/the_message/)
   end
 
-  it "should set the log level using the method form, with :trace, :debug, :info, :warn, :error, or :fatal" do
+  it "sets the log level using the method form, with :trace, :debug, :info, :warn, :error, or :fatal" do
     levels = {
       trace: Mixlib::Log::TRACE,
       debug: Mixlib::Log::DEBUG,
@@ -133,15 +132,15 @@ RSpec.describe Mixlib::Log do
     end
   end
 
-  it "should raise an ArgumentError if you try and set the level to something strange using the binding form" do
+  it "raises an ArgumentError if you try and set the level to something strange using the binding form" do
     expect { Logit.level = :the_roots }.to raise_error(ArgumentError)
   end
 
-  it "should raise an ArgumentError if you try and set the level to something strange using the method form" do
+  it "raises an ArgumentError if you try and set the level to something strange using the method form" do
     expect { Logit.level(:the_roots) }.to raise_error(ArgumentError)
   end
 
-  it "should pass other method calls directly to logger" do
+  it "passes other method calls directly to logger" do
     expect do
       # this needs to be inside of the block because the level setting
       # is causing the init, which grabs $stderr before rspec replaces
@@ -152,30 +151,30 @@ RSpec.describe Mixlib::Log do
     end.to output(/DEBUG: Gimme some sugar!/).to_stdout
   end
 
-  it "should pass add method calls directly to logger" do
+  it "passes add method calls directly to logger" do
     logdev = StringIO.new
     Logit.init(logdev)
     Logit.level = :debug
     expect(Logit).to be_debug
-    expect { Logit.add(Logger::DEBUG, "Gimme some sugar!") }.to_not raise_error
+    expect { Logit.add(Logger::DEBUG, "Gimme some sugar!") }.not_to raise_error
     expect(logdev.string).to match(/Gimme some sugar/)
   end
 
-  it "should default to STDOUT if init is called with no arguments" do
+  it "defaults to STDOUT if init is called with no arguments" do
     logger_mock = Struct.new(:formatter, :level).new
     # intentionally STDOUT to avoid unfailable test
     expect(Logger).to receive(:new).with(STDOUT).and_return(logger_mock)
     Logit.init
   end
 
-  it "should have by default a base log level of warn" do
+  it "has by default a base log level of warn" do
     logger_mock = Struct.new(:formatter, :level).new
     expect(Logger).to receive(:new).and_return(logger_mock)
     Logit.init
     expect(Logit.level).to eq(:warn)
   end
 
-  it "should close File logger" do
+  it "closes File logger" do
     opened_files_count_before = 0
     ObjectSpace.each_object(File) do |f|
       opened_files_count_before += 1 unless f.closed?
@@ -191,7 +190,7 @@ RSpec.describe Mixlib::Log do
     expect(opened_files_count_after).to eq(opened_files_count_before + 1)
   end
 
-  it "should not close IO logger" do
+  it "does not close IO logger" do
     opened_files_count_before = 0
     ObjectSpace.each_object(File) do |f|
       opened_files_count_before += 1 unless f.closed?
@@ -208,7 +207,7 @@ RSpec.describe Mixlib::Log do
     end
   end
 
-  it "should return nil from its logging methods" do
+  it "returns nil from its logging methods" do
     # intentionally STDOUT to avoid unfailable test
     expect(Logger).to receive(:new).with(STDOUT) { double("a-quiet-logger").as_null_object }
     Logit.init
@@ -223,18 +222,18 @@ RSpec.describe Mixlib::Log do
     end
   end
 
-  it "should set metadata correctly" do
+  it "sets metadata correctly" do
     Logit.metadata = { test: "data" }
     expect(Logit.metadata).to eql({ test: "data" })
   end
 
-  it "should format :trace level messages with TRACE: label" do
+  it "formats :trace level messages with TRACE: label" do
     logdev = StringIO.new
     Logit.init(logdev)
     Logit.level = :trace
     Logit.trace("this is a log message")
     aggregate_failures do
-      expect(logdev.string).to_not match(/ANY:/)
+      expect(logdev.string).not_to match(/ANY:/)
       expect(logdev.string).to match(/TRACE:/)
     end
   end

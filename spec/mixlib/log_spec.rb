@@ -341,6 +341,23 @@ RSpec.describe Mixlib::Log, :isolated_log do
       expect(io.string).to match(/FATAL: from a block/)
     end
 
+    it "does not evaluate the block when the message is dropped" do
+      log.level = :warn
+      expect { |b| log.debug(&b) }.not_to yield_control
+    end
+
+    it "evaluates the block when any device will write the message" do
+      other = StringIO.new
+      verbose = Mixlib::Log::Logger.new(other)
+      log.loggers << verbose
+      log.level = :warn
+      verbose.level = Logger::DEBUG
+      log.debug { "verbose only" }
+
+      expect(io.string).to be_empty
+      expect(other.string).to match(/DEBUG: verbose only/)
+    end
+
     it "returns nil" do
       log.level = :trace
       results = Mixlib::Log::Logging::LEVELS.keys.map { |name| log.public_send(name, "hello") }
@@ -375,6 +392,16 @@ RSpec.describe Mixlib::Log, :isolated_log do
       log.init(io)
       log.add(Logger::ERROR) { "from a block" }
       expect(io.string).to match(/ERROR: from a block/)
+    end
+
+    it "does not evaluate the block when the message is dropped" do
+      log.init(io)
+      expect { |b| log.add(Logger::DEBUG, &b) }.not_to yield_control
+    end
+
+    it "returns true when the message is dropped" do
+      log.init(io)
+      expect(log.add(Logger::DEBUG, "dropped")).to be(true)
     end
   end
 

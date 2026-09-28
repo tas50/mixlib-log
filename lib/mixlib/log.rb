@@ -142,6 +142,8 @@ module Mixlib
     end
 
     def add(severity, message = nil, progname = nil, data: {}, &block)
+      return true unless log_level_enabled?(severity)
+
       message, progname, data = merge_block_result(yield, progname, data) if block_given?
       data = metadata.merge(data) if metadata.is_a?(Hash) && data.is_a?(Hash)
       loggers.each do |l|
@@ -192,6 +194,17 @@ module Mixlib
         opts.first
       else
         Mixlib::Log::Logger.new(*opts)
+      end
+    end
+
+    # True when at least one device would write this severity. Devices that
+    # don't expose an Integer level are assumed to want everything.
+    def log_level_enabled?(severity)
+      return true if severity.nil?
+
+      loggers.any? do |l|
+        device_level = l.respond_to?(:level) ? l.level : nil
+        !device_level.is_a?(Integer) || device_level <= severity
       end
     end
 

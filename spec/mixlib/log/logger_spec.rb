@@ -82,6 +82,11 @@ RSpec.describe Mixlib::Log::Logger do
       expect { |b| logger.add(Logger::WARN, &b) }.not_to yield_control
     end
 
+    it "does not evaluate the block from a logging method when the message is dropped" do
+      logger.level = Logger::ERROR
+      expect { |b| logger.warn(&b) }.not_to yield_control
+    end
+
     it "uses progname as the message when there is no message or block" do
       logger.add(Logger::WARN, nil, "from progname")
       expect(io.string).to match(/WARN: from progname/)

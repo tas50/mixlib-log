@@ -35,6 +35,9 @@ module Mixlib
       attr_accessor :metadata
 
       def pass(severity, args, progname = nil, data: {}, &block)
+        # skip the block, and any metadata merging, for levels nobody will write
+        return true unless log_level_enabled?(severity)
+
         args, progname, data = merge_block_result(yield, progname, data) if block_given?
         add(severity, args, progname, data: data)
       end
@@ -50,6 +53,10 @@ module Mixlib
       end
 
       private
+
+      def log_level_enabled?(severity)
+        severity.nil? || severity >= level
+      end
 
       # A log block may return just a message or [message, progname, data].
       # Anything it leaves out keeps the value it had outside the block, and

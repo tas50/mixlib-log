@@ -46,6 +46,14 @@ RSpec.describe Mixlib::Log::Child, :isolated_log do
     expect(io.string).to be_empty
   end
 
+  it "does not evaluate the block when the parent drops the message" do
+    expect { |b| child.info(&b) }.not_to yield_control
+  end
+
+  it "does not evaluate the block when a nested child's message is dropped" do
+    expect { |b| child.with_child.info(&b) }.not_to yield_control
+  end
+
   it "reports the parent's level" do
     log.level = :debug
     expect(child.level).to eq(:debug)

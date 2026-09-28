@@ -141,11 +141,11 @@ module Mixlib
       loggers.each { |l| l << msg }
     end
 
-    def add(severity, message = nil, progname = nil, data: {}, &block)
+    def add(severity, message = nil, progname = nil, data: EMPTY_DATA, &block)
       return true unless log_level_enabled?(severity)
 
       message, progname, data = merge_block_result(yield, progname, data) if block_given?
-      data = metadata.merge(data) if metadata.is_a?(Hash) && data.is_a?(Hash)
+      data = metadata.merge(data) if metadata.is_a?(Hash) && !metadata.empty? && data.is_a?(Hash)
       loggers.each do |l|
         # if we don't have any metadata, let's not do the potentially expensive
         # merging and managing that this call requires

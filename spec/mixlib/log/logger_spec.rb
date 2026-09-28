@@ -103,6 +103,20 @@ RSpec.describe Mixlib::Log::Logger do
       expect(io.string).to match(/WARN: msg/)
     end
 
+    it "gives the formatter a new hash it can modify" do
+      seen = []
+      logger.formatter = proc do |_severity, _time, _progname, msg|
+        msg[:seen] = true
+        seen << msg
+        "#{msg[:msg]}\n"
+      end
+      logger.warn("first")
+      logger.warn("second")
+
+      expect(seen.map(&:frozen?)).to eq([false, false])
+      expect(seen.first).not_to be(seen.last)
+    end
+
     it "formats exceptions" do
       logger.add(Logger::ERROR, IOError.new("broken pipe"))
       expect(io.string).to match(/ERROR: broken pipe \(IOError\)/)

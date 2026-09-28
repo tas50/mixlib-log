@@ -39,7 +39,7 @@ module Mixlib
         end
       end
 
-      def add_data(severity, message = nil, progname = nil, data: {})
+      def add_data(severity, message = nil, progname = nil, data: EMPTY_DATA)
         severity ||= UNKNOWN
         return true if @logdev.nil? || severity < level
 
@@ -53,8 +53,10 @@ module Mixlib
           end
         end
 
-        # build a new hash so the caller's data is never modified
-        data = (data || {}).merge(message.is_a?(::Exception) ? { err: message } : { msg: message })
+        # build a new hash so the caller's data is never modified, and skip
+        # the merge entirely in the common case of no data
+        entry = message.is_a?(::Exception) ? { err: message } : { msg: message }
+        data = data.nil? || data.empty? ? entry : data.merge(entry)
         @logdev.write(
           format_message(to_label(severity), Time.now, progname, data)
         )

@@ -32,9 +32,12 @@ module Mixlib
       LEVELS = { trace: TRACE, debug: DEBUG, info: INFO, warn: WARN, error: ERROR, fatal: FATAL }.freeze
       LEVEL_NAMES = LEVELS.invert.freeze
 
+      # Shared default for data: so a call doesn't allocate a fresh empty Hash
+      EMPTY_DATA = {}.freeze
+
       attr_accessor :metadata
 
-      def pass(severity, args, progname = nil, data: {}, &block)
+      def pass(severity, args, progname = nil, data: EMPTY_DATA, &block)
         # skip the block, and any metadata merging, for levels nobody will write
         return true unless log_level_enabled?(severity)
 
@@ -46,7 +49,7 @@ module Mixlib
       # No need to incur method_missing overhead on every log call.
       %i{trace debug info warn error fatal}.each do |method_name|
         level = LEVELS[method_name]
-        define_method(method_name) do |msg = nil, data: {}, &block|
+        define_method(method_name) do |msg = nil, data: EMPTY_DATA, &block|
           pass(level, msg, data: data, &block)
           nil
         end

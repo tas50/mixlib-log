@@ -42,7 +42,7 @@ module Mixlib
         end
       end
 
-      def add(severity, message = nil, progname = nil, data: {}, &block)
+      def add(severity, message = nil, progname = nil, data: EMPTY_DATA, &block)
         return true unless log_level_enabled?(severity)
 
         data = metadata.merge(data) if data.is_a?(Hash)
